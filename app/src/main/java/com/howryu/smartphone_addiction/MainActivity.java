@@ -36,14 +36,13 @@ public class MainActivity extends ActionBarActivity {
 
         FragmentPagerItems pages = new FragmentPagerItems(this);
         pages.add(FragmentPagerItem.of("home", HomeFragment.class));
-        pages.add(FragmentPagerItem.of("serach", SearchFragment.class));
+        pages.add(FragmentPagerItem.of("search", SearchFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), pages);
 
         viewPager.setAdapter(adapter);
         viewPagerTab.setViewPager(viewPager);
-
     }
 
     private void setupViewPagerTab(SmartTabLayout layout){

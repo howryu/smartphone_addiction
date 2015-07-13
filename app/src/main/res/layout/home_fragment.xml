@@ -6,19 +6,13 @@
     android:gravity="center"
     >
 
-    <TextView
-        android:id="@+id/item_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Page:"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
-
-    <TextView
-        android:id="@+id/item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="80sp"
-        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_app_usage"
+        android:layout_marginLeft="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_small"
+        android:scrollbars="vertical"
+        android:drawSelectorOnTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
