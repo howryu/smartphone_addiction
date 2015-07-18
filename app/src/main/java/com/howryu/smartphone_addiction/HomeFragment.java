@@ -2,6 +2,7 @@ package com.howryu.smartphone_addiction;
 
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -25,9 +26,16 @@ public class HomeFragment extends Fragment {
     private UsageStatsManager myStatsManager;
     private UsageQuerier myQuarier;
     RecyclerView.LayoutManager mLayoutManager;
-    private UsageListAdapter mUsageListAdapter;
-    RecyclerView mRecyclerView;
-    private List<UsageStats> recentDayStatsList;
+
+    private UsageListAdapter mOneDayUsageListAdapter;
+    private UsageListAdapter mOneWeekUsageListAdapter;
+    private UsageListAdapter mOneMonthUsageListAdapter;
+    RecyclerView mOneDayRecyclerView;
+    RecyclerView mOneWeekRecyclerView;
+    RecyclerView mOneMonthRecyclerView;
+
+
+
 
 
     @Override
@@ -36,13 +44,13 @@ public class HomeFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.home_fragment, container, false);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_app_usage);
+        mOneDayRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_app_usage_one_day);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mOneDayRecyclerView.setLayoutManager(mLayoutManager);
 
-        mUsageListAdapter = new UsageListAdapter();
+        mOneDayUsageListAdapter = new UsageListAdapter();
 
-        mRecyclerView.setAdapter(mUsageListAdapter);
+        mOneDayRecyclerView.setAdapter(mOneDayUsageListAdapter);
 
         return rootView;
     }
@@ -53,26 +61,31 @@ public class HomeFragment extends Fragment {
 
         myStatsManager = (UsageStatsManager) getActivity()
                 .getSystemService("usagestats"); //Context.USAGE_STATS_SERVICE
-
         myQuarier = new UsageQuerier(myStatsManager);
 
-        recentDayStatsList = myQuarier.getUsageStatsInOneDay();
+        List<UsageStats> oneDayUsageStatsList;
+        oneDayUsageStatsList = myQuarier.getUsageStatsInLastOneDay();
 
-        updateAppsList(recentDayStatsList);
+        updateAppsList(oneDayUsageStatsList, mOneDayUsageListAdapter, mOneDayRecyclerView);
 
-        Log.v("TEST", "List Size is " + Integer.toString(recentDayStatsList.size()));
-        for (UsageStats i : recentDayStatsList ){
-            Log.v("STATSLIST", i.getPackageName() + i.getTotalTimeInForeground() + " \n");
-        }
+//            Log.v("TEST", "List Size is " + Integer.toString(recentDayStatsList.size()));
+//            for (UsageStats i : recentDayStatsList ){
+//                Log.v("STATSLIST", i.getPackageName() + i.getTotalTimeInForeground() + " \n");
+//            }
 
     }
 
-    void updateAppsList(List<UsageStats> usageStatsList) {
+    void updateAppsList(List<UsageStats> usageStatsList, UsageListAdapter adapter, RecyclerView mView) {
         List<CustomUsageStats> customUsageStatsList = new ArrayList<>();
         for (int i = 0; i < usageStatsList.size(); i++) {
             CustomUsageStats customUsageStats = new CustomUsageStats();
+
             customUsageStats.usageStats = usageStatsList.get(i);
+            PackageManager pm = getActivity().getPackageManager();
+
             try {
+                ApplicationInfo ai = pm.getApplicationInfo(customUsageStats.usageStats.getPackageName(), 0);
+                customUsageStats.appName = (String) pm.getApplicationLabel(ai);
                 Drawable appIcon = getActivity().getPackageManager()
                         .getApplicationIcon(customUsageStats.usageStats.getPackageName());
                 customUsageStats.appIcon = appIcon;
@@ -84,8 +97,8 @@ public class HomeFragment extends Fragment {
             }
             customUsageStatsList.add(customUsageStats);
         }
-        mUsageListAdapter.setCustomUsageStatsList(customUsageStatsList);
-        mUsageListAdapter.notifyDataSetChanged();
-        mRecyclerView.scrollToPosition(0);
+        adapter.setCustomUsageStatsList(customUsageStatsList);
+        adapter.notifyDataSetChanged();
+        mView.scrollToPosition(0);
     }
 }

@@ -26,7 +26,6 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,23 +40,23 @@ public class UsageListAdapter extends RecyclerView.Adapter<UsageListAdapter.View
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView mPackageName;
-        private final TextView mLastTimeUsed;
+        private final TextView mAppName;
+        private final TextView mTotalTimeUsed;
         private final ImageView mAppIcon;
 
         public ViewHolder(View v) {
             super(v);
-            mPackageName = (TextView) v.findViewById(R.id.textview_package_name);
-            mLastTimeUsed = (TextView) v.findViewById(R.id.textview_last_time_used);
+            mAppName = (TextView) v.findViewById(R.id.textview_app_name);
+            mTotalTimeUsed = (TextView) v.findViewById(R.id.textview_total_time_used);
             mAppIcon = (ImageView) v.findViewById(R.id.app_icon);
         }
 
-        public TextView getLastTimeUsed() {
-            return mLastTimeUsed;
+        public TextView getTotalTimeUsed() {
+            return mTotalTimeUsed;
         }
 
-        public TextView getPackageName() {
-            return mPackageName;
+        public TextView getAppName() {
+            return mAppName;
         }
 
         public ImageView getAppIcon() {
@@ -77,10 +76,10 @@ public class UsageListAdapter extends RecyclerView.Adapter<UsageListAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getPackageName().setText(
-                mCustomUsageStatsList.get(position).usageStats.getPackageName());
-        long lastTimeUsed = mCustomUsageStatsList.get(position).usageStats.getLastTimeUsed();
-        viewHolder.getLastTimeUsed().setText(mDateFormat.format(new Date(lastTimeUsed)));
+        viewHolder.getAppName().setText(
+                mCustomUsageStatsList.get(position).appName);
+        String totalTimeInForeground = convertMillsToNormal(mCustomUsageStatsList.get(position).usageStats.getTotalTimeInForeground());
+        viewHolder.getTotalTimeUsed().setText(totalTimeInForeground);
         viewHolder.getAppIcon().setImageDrawable(mCustomUsageStatsList.get(position).appIcon);
     }
 
@@ -92,4 +91,21 @@ public class UsageListAdapter extends RecyclerView.Adapter<UsageListAdapter.View
     public void setCustomUsageStatsList(List<CustomUsageStats> customUsageStats) {
         mCustomUsageStatsList = customUsageStats;
     }
+
+    private String convertMillsToNormal(long totalTimeInForeground){
+        int minutes;
+        int seconds;
+        int hours;
+
+        minutes = (int) (( totalTimeInForeground / (1000*60)) % 60);
+        seconds = (int) (totalTimeInForeground / 1000) % 60 ;
+        hours   = (int) ((totalTimeInForeground / (1000*60*60)) % 24);
+
+        String result;
+        result = Integer.toString(hours) + "h:" + Integer.toString(minutes) + "m:"
+                + Integer.toString(seconds) + "s";
+
+        return result;
+    }
+
 }

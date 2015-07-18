@@ -26,4 +26,5 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.2.0@aar'
     compile 'com.android.support:recyclerview-v7:+'
     //compile 'com.ogaclejapan.smarttablayout:utils-v13:1.2.0@aar'
+    compile files('libs/activation.jar')
 }
